@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "apps.portfolio",
     "apps.contact",
     "apps.diagnostic",
+    "apps.assistant",
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "Nos Expertises",
@@ -37,8 +39,9 @@ const services = [
 export default function ExpertisesPage() {
   return (
     <>
-      <section className="bg-navy-700 text-white">
-        <div className="container-bmc px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative bg-navy-700 text-white overflow-hidden">
+        <Image src={images.expertises} alt="Equipe en formation" fill className="object-cover opacity-20" />
+        <div className="relative container-bmc px-4 sm:px-6 lg:px-8 py-20">
           <span className="text-orange-400 font-semibold text-sm uppercase tracking-wider">Nos Expertises</span>
           <h1 className="text-4xl sm:text-5xl font-bold font-display mt-3 mb-6">
             L\u2019excellence commerciale, de A a Z

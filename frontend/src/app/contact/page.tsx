@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import ContactForm from "@/components/ui/ContactForm";
+import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -14,8 +16,9 @@ const contacts = [
 export default function ContactPage() {
   return (
     <>
-      <section className="bg-navy-700 text-white">
-        <div className="container-bmc px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative bg-navy-700 text-white overflow-hidden">
+        <Image src={images.contact} alt="Poignee de main professionnelle" fill className="object-cover opacity-20" />
+        <div className="relative container-bmc px-4 sm:px-6 lg:px-8 py-20">
           <span className="text-orange-400 font-semibold text-sm uppercase tracking-wider">Contact</span>
           <h1 className="text-4xl sm:text-5xl font-bold font-display mt-3 mb-6">Parlons de votre projet</h1>
           <p className="text-lg text-slate-300 max-w-2xl">

@@ -19,6 +19,7 @@ urlpatterns = [
     path("api/v1/contact/", include("apps.contact.urls")),
     path("api/v1/diagnostic/", include("apps.diagnostic.urls")),
     path("api/v1/core/", include("apps.core.urls")),
+    path("api/v1/assistant/", include("apps.assistant.urls")),
 ]
 
 if settings.DEBUG:
