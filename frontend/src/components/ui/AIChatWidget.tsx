@@ -15,6 +15,47 @@ const suggestions = [
   "Comment rejoindre le reseau de talents ?",
 ];
 
+const FALLBACK_RESPONSES: Record<string, { keywords: string[]; response: string }> = {
+  services: {
+    keywords: ["service", "prestation", "offre", "proposez", "faites"],
+    response: "Le Cabinet BMC propose : audit commercial, formation des equipes, recrutement de forces de vente, televente, coaching, conseil en image et communication. Quel domaine vous interesse ?",
+  },
+  formation: {
+    keywords: ["formation", "academy", "apprendre", "module", "cours", "former"],
+    response: "BMC Academy propose 9 modules de formation : techniques de vente, management, developpement personnel, prise de parole en public, gestion du temps et des emotions, relation client, et plus. Souhaitez-vous des details sur un module specifique ?",
+  },
+  diagnostic: {
+    keywords: ["diagnostic", "evaluer", "audit", "analyse", "maturite"],
+    response: "Notre diagnostic commercial vous permet d’evaluer la maturite commerciale de votre entreprise. Rendez-vous sur notre page Diagnostic pour le realiser en ligne, ou contactez-nous pour un audit approfondi.",
+  },
+  talent: {
+    keywords: ["talent", "profil", "cv", "candidat", "opportunit", "rejoindre", "recrutement"],
+    response: "Rejoignez le reseau de talents BMC ! Creez votre profil en ligne, deposez votre CV et accedez aux opportunites : missions terrain, televente, closing, et plus. Inscrivez-vous sur notre page Talents.",
+  },
+  contact: {
+    keywords: ["contact", "telephone", "email", "joindre", "adresse", "appeler"],
+    response: "Vous pouvez nous joindre par telephone au +229 91 47 41 41, par email a cabinetbmc20@gmail.com, ou via le formulaire de contact sur notre site.",
+  },
+  coaching: {
+    keywords: ["coaching", "coach", "accompagnement", "personnel", "professionnel"],
+    response: "Le Cabinet BMC propose des programmes de coaching personnalises pour salaries, etudiants, commerciaux et entrepreneurs. Contactez-nous pour definir un programme adapte a vos objectifs.",
+  },
+  prix: {
+    keywords: ["prix", "tarif", "cout", "combien", "devis", "budget"],
+    response: "Nos tarifs sont adaptes a chaque projet. Demandez un devis personnalise via notre page Entreprises ou contactez-nous au +229 91 47 41 41 pour en discuter.",
+  },
+};
+
+function getLocalFallback(message: string): string {
+  const msg = message.toLowerCase();
+  for (const entry of Object.values(FALLBACK_RESPONSES)) {
+    if (entry.keywords.some((kw) => msg.includes(kw))) {
+      return entry.response;
+    }
+  }
+  return "Merci pour votre question ! Le Cabinet BMC est specialise en developpement commercial. Nous proposons audit, formation, force de vente, coaching et communication. Comment puis-je vous orienter ?";
+}
+
 export default function AIChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -46,7 +87,7 @@ export default function AIChatWidget() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Desole, je rencontre une difficulte technique. Contactez-nous directement au +229 91 47 41 41." },
+        { role: "assistant", content: getLocalFallback(msg) },
       ]);
     } finally {
       setLoading(false);
