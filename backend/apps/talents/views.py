@@ -1,5 +1,6 @@
 from rest_framework import generics, viewsets, permissions, serializers, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import TalentProfile, Opportunity, Application
 from .serializers import TalentProfileSerializer, OpportunitySerializer, ApplicationSerializer
