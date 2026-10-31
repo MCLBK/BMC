@@ -1,4 +1,8 @@
+import os
+
+from django.conf import settings
 from rest_framework import serializers
+
 from .models import TalentProfile, Opportunity, Application
 
 
@@ -14,6 +18,17 @@ class TalentProfileSerializer(serializers.ModelSerializer):
                   "geographic_zone", "years_experience", "cv", "photo",
                   "is_profile_complete", "created_at", "updated_at"]
         read_only_fields = ["id", "user", "is_profile_complete", "created_at", "updated_at"]
+
+    def validate_cv(self, value):
+        if value:
+            ext = os.path.splitext(value.name)[1].lower()
+            allowed = getattr(settings, "ALLOWED_UPLOAD_EXTENSIONS", [".pdf"])
+            if ext not in allowed:
+                raise serializers.ValidationError("Seuls les fichiers PDF sont acceptes.")
+            max_size = getattr(settings, "MAX_UPLOAD_SIZE", 5 * 1024 * 1024)
+            if value.size > max_size:
+                raise serializers.ValidationError("Le fichier ne doit pas depasser 5 Mo.")
+        return value
 
 
 class OpportunitySerializer(serializers.ModelSerializer):

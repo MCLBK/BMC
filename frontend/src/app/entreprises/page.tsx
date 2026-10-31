@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Image from "next/image";
 import { apiPost } from "@/lib/api";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { images } from "@/lib/images";
 
 const serviceTypes = [
   { value: "audit", label: "Audit commercial" },
@@ -49,8 +51,9 @@ export default function EntreprisesPage() {
 
   return (
     <>
-      <section className="bg-navy-700 text-white">
-        <div className="container-bmc px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative bg-navy-700 text-white overflow-hidden">
+        <Image src={images.entreprises} alt="Equipe professionnelle" fill className="object-cover opacity-20" />
+        <div className="relative container-bmc px-4 sm:px-6 lg:px-8 py-20">
           <span className="text-orange-400 font-semibold text-sm uppercase tracking-wider">Entreprises</span>
           <h1 className="text-4xl sm:text-5xl font-bold font-display mt-3 mb-6">
             Developpez votre performance commerciale
@@ -61,7 +64,7 @@ export default function EntreprisesPage() {
         </div>
       </section>
 
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-cool">
         <div className="container-bmc max-w-3xl">
           <SectionTitle title="Demande de prestation" description="Remplissez ce formulaire pour nous decrire votre besoin. Nous reviendrons vers vous rapidement." />
 

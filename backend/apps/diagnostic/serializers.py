@@ -15,4 +15,4 @@ class DiagnosticSessionSerializer(serializers.ModelSerializer):
         fields = ["id", "company_name", "contact_name", "contact_email",
                   "contact_phone", "answers", "score", "results_summary",
                   "sent_to_cabinet", "created_at"]
-        read_only_fields = ["id", "score", "results_summary", "created_at"]
+        read_only_fields = ["id", "results_summary", "created_at"]

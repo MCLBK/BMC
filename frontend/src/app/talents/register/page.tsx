@@ -34,7 +34,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-cool min-h-[80vh] flex items-center">
       <div className="container-bmc max-w-lg">
         <h1 className="heading-2 text-center mb-8">Creer un compte Talent</h1>
         <form onSubmit={handleSubmit} className="space-y-5 bg-white p-8 rounded-xl border border-slate-100 shadow-sm">

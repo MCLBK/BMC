@@ -36,7 +36,7 @@ export default function CabinetPage() {
         </div>
       </section>
 
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-cool">
         <div className="container-bmc">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
@@ -67,7 +67,7 @@ export default function CabinetPage() {
         </div>
       </section>
 
-      <section className="section-padding bg-slate-50">
+      <section className="section-padding bg-gradient-warm">
         <div className="container-bmc">
           <SectionTitle
             label="Nos domaines"

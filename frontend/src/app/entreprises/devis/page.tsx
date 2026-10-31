@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Image from "next/image";
 import { apiPost } from "@/lib/api";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { images } from "@/lib/images";
 
 export default function DevisPage() {
   const [loading, setLoading] = useState(false);
@@ -20,11 +22,9 @@ export default function DevisPage() {
         contact_name: fd.get("contact_name"),
         contact_email: fd.get("contact_email"),
         contact_phone: fd.get("contact_phone"),
-        position: fd.get("position"),
-        services_requested: fd.get("services_requested"),
+        sector: fd.get("sector"),
         description: fd.get("description"),
-        budget_range: fd.get("budget_range"),
-        timeline: fd.get("timeline"),
+        specifications: fd.get("specifications"),
       });
       setSuccess(true);
     } catch (err) {
@@ -36,8 +36,9 @@ export default function DevisPage() {
 
   return (
     <>
-      <section className="bg-navy-700 text-white">
-        <div className="container-bmc px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative bg-navy-700 text-white overflow-hidden">
+        <Image src={images.entreprises} alt="Espace professionnel" fill className="object-cover opacity-20" />
+        <div className="relative container-bmc px-4 sm:px-6 lg:px-8 py-20">
           <span className="text-orange-400 font-semibold text-sm uppercase tracking-wider">Devis</span>
           <h1 className="text-4xl sm:text-5xl font-bold font-display mt-3 mb-6">
             Demandez un devis
@@ -48,7 +49,7 @@ export default function DevisPage() {
         </div>
       </section>
 
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-cool">
         <div className="container-bmc max-w-3xl">
           <SectionTitle title="Formulaire de demande de devis" />
 
@@ -85,29 +86,18 @@ export default function DevisPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Fonction</label>
-                <input type="text" name="position" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Services souhaites *</label>
-                <input type="text" name="services_requested" required placeholder="Ex: Formation commerciale, audit, coaching..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Secteur d&apos;activite</label>
+                <input type="text" name="sector" placeholder="Ex: Agroalimentaire, Telecom, Banque..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Description du projet *</label>
-                <textarea name="description" rows={5} required className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
+                <textarea name="description" rows={5} required placeholder="Decrivez votre projet et les services souhaites..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Budget indicatif</label>
-                  <input type="text" name="budget_range" placeholder="Ex: 500 000 - 1 000 000 FCFA" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Delai souhaite</label>
-                  <input type="text" name="timeline" placeholder="Ex: Sous 1 mois" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Cahier des charges / Precisions</label>
+                <textarea name="specifications" rows={3} placeholder="Informations complementaires, contraintes, budget indicatif, delais..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
               </div>
 
               <button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-50">

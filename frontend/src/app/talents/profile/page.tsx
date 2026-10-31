@@ -6,15 +6,21 @@ import { useAuth } from "@/lib/auth";
 import { apiFetch, apiUpload } from "@/lib/api";
 
 interface TalentProfile {
-  title: string;
+  headline: string;
   bio: string;
-  skills: string;
-  experience_years: number;
+  phone: string;
+  city: string;
+  country: string;
   education: string;
-  location: string;
+  experience: string;
+  skills: string;
+  sectors: string;
+  languages: string;
   availability: string;
+  geographic_zone: string;
+  years_experience: number | null;
   cv: string | null;
-  linkedin_url: string;
+  is_profile_complete: boolean;
 }
 
 export default function ProfilePage() {
@@ -32,7 +38,7 @@ export default function ProfilePage() {
     }
     apiFetch<TalentProfile>("/talents/profile/", { token: token! })
       .then(setProfile)
-      .catch(() => setProfile({ title: "", bio: "", skills: "", experience_years: 0, education: "", location: "", availability: "available", cv: null, linkedin_url: "" }))
+      .catch(() => setProfile({ headline: "", bio: "", phone: "", city: "", country: "Benin", education: "", experience: "", skills: "", sectors: "", languages: "", availability: "available", geographic_zone: "", years_experience: null, cv: null, is_profile_complete: false }))
       .finally(() => setLoading(false));
   }, [isAuthenticated, token, router]);
 
@@ -42,36 +48,27 @@ export default function ProfilePage() {
     setMessage("");
     const fd = new FormData(e.currentTarget);
     try {
+      const fields = ["headline", "bio", "phone", "city", "country", "education", "experience", "skills", "sectors", "languages", "availability", "geographic_zone", "years_experience"];
       const cvFile = (e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement)?.files?.[0];
       if (cvFile) {
         const uploadData = new FormData();
         uploadData.append("cv", cvFile);
-        Object.entries(profile || {}).forEach(([k, v]) => {
-          if (k !== "cv" && v !== null) uploadData.append(k, String(v));
-        });
-        uploadData.set("title", fd.get("title") as string);
-        uploadData.set("bio", fd.get("bio") as string);
-        uploadData.set("skills", fd.get("skills") as string);
-        uploadData.set("experience_years", fd.get("experience_years") as string);
-        uploadData.set("education", fd.get("education") as string);
-        uploadData.set("location", fd.get("location") as string);
-        uploadData.set("availability", fd.get("availability") as string);
-        uploadData.set("linkedin_url", fd.get("linkedin_url") as string);
+        for (const key of fields) {
+          const val = fd.get(key);
+          if (val !== null) uploadData.set(key, val as string);
+        }
         await apiUpload("/talents/profile/", uploadData, { token: token! });
       } else {
+        const body: Record<string, unknown> = {};
+        for (const key of fields) {
+          body[key] = fd.get(key) || "";
+        }
+        const ye = fd.get("years_experience");
+        body.years_experience = ye ? parseInt(ye as string, 10) : null;
         await apiFetch("/talents/profile/", {
           token: token!,
           method: "PUT",
-          body: JSON.stringify({
-            title: fd.get("title"),
-            bio: fd.get("bio"),
-            skills: fd.get("skills"),
-            experience_years: fd.get("experience_years"),
-            education: fd.get("education"),
-            location: fd.get("location"),
-            availability: fd.get("availability"),
-            linkedin_url: fd.get("linkedin_url"),
-          }),
+          body: JSON.stringify(body),
         });
       }
       setMessage("Profil mis a jour avec succes.");
@@ -85,7 +82,7 @@ export default function ProfilePage() {
   if (loading) return <div className="section-padding text-center">Chargement...</div>;
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-cool">
       <div className="container-bmc max-w-2xl">
         <h1 className="heading-2 mb-8">Mon profil</h1>
         {message && (
@@ -96,46 +93,72 @@ export default function ProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Titre professionnel</label>
-            <input type="text" name="title" defaultValue={profile?.title} placeholder="Ex: Commercial terrain senior" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            <input type="text" name="headline" defaultValue={profile?.headline} placeholder="Ex: Commercial terrain senior" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Presentation</label>
             <textarea name="bio" rows={4} defaultValue={profile?.bio} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Competences</label>
-            <input type="text" name="skills" defaultValue={profile?.skills} placeholder="Ex: Vente B2B, Negociation, CRM" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Telephone</label>
+              <input type="tel" name="phone" defaultValue={profile?.phone} placeholder="+229 XX XX XX XX" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Ville</label>
+              <input type="text" name="city" defaultValue={profile?.city} placeholder="Ex: Cotonou" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Annees d&apos;experience</label>
-              <input type="number" name="experience_years" min={0} defaultValue={profile?.experience_years} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Pays</label>
+              <input type="text" name="country" defaultValue={profile?.country} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Localisation</label>
-              <input type="text" name="location" defaultValue={profile?.location} placeholder="Ex: Cotonou, Benin" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Annees d&apos;experience</label>
+              <input type="number" name="years_experience" min={0} defaultValue={profile?.years_experience ?? ""} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Competences</label>
+            <textarea name="skills" rows={2} defaultValue={profile?.skills} placeholder="Ex: Vente B2B, Negociation, CRM, Prospection..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Experiences professionnelles</label>
+            <textarea name="experience" rows={4} defaultValue={profile?.experience} placeholder="Decrivez vos experiences professionnelles..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Formation</label>
-            <input type="text" name="education" defaultValue={profile?.education} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            <textarea name="education" rows={2} defaultValue={profile?.education} placeholder="Diplomes et formations..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Disponibilite</label>
-            <select name="availability" defaultValue={profile?.availability} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none">
-              <option value="available">Disponible</option>
-              <option value="partially_available">Partiellement disponible</option>
-              <option value="not_available">Non disponible</option>
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Secteurs d&apos;activite</label>
+              <input type="text" name="sectors" defaultValue={profile?.sectors} placeholder="Ex: FMCG, Telecom, Banque..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Langues</label>
+              <input type="text" name="languages" defaultValue={profile?.languages} placeholder="Ex: Francais, Anglais, Fon..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">LinkedIn</label>
-            <input type="url" name="linkedin_url" defaultValue={profile?.linkedin_url} placeholder="https://linkedin.com/in/..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Disponibilite</label>
+              <select name="availability" defaultValue={profile?.availability} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none">
+                <option value="available">Disponible</option>
+                <option value="partially">Partiellement disponible</option>
+                <option value="unavailable">Non disponible</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Zone geographique</label>
+              <input type="text" name="geographic_zone" defaultValue={profile?.geographic_zone} placeholder="Ex: Cotonou et environs" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">CV (PDF, max 5 Mo)</label>
             <input type="file" accept=".pdf" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-500 hover:file:bg-orange-100" />
-            {profile?.cv && <p className="text-xs text-slate-500 mt-1">CV actuel enregistre</p>}
+            {profile?.cv && <p className="text-xs text-green-600 mt-1">CV actuel enregistre</p>}
           </div>
           <button type="submit" disabled={saving} className="btn-primary w-full disabled:opacity-50">
             {saving ? "Sauvegarde..." : "Mettre a jour mon profil"}

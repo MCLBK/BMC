@@ -1,4 +1,4 @@
-from rest_framework import generics, viewsets, permissions, status
+from rest_framework import generics, viewsets, permissions, serializers, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import TalentProfile, Opportunity, Application
@@ -37,7 +37,9 @@ class ApplicationCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        profile = TalentProfile.objects.get(user=self.request.user)
+        profile, _ = TalentProfile.objects.get_or_create(user=self.request.user)
+        if Application.objects.filter(talent=profile, opportunity=serializer.validated_data["opportunity"]).exists():
+            raise serializers.ValidationError({"detail": "Vous avez deja postule a cette opportunite."})
         serializer.save(talent=profile)
 
 
@@ -49,3 +51,19 @@ class MyApplicationsView(generics.ListAPIView):
         return Application.objects.filter(
             talent__user=self.request.user
         ).select_related("opportunity")
+
+
+class CVDownloadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, user_id):
+        if str(request.user.id) != str(user_id) and not request.user.is_staff:
+            return Response({"detail": "Acces refuse."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            profile = TalentProfile.objects.get(user_id=user_id)
+        except TalentProfile.DoesNotExist:
+            return Response({"detail": "Profil introuvable."}, status=status.HTTP_404_NOT_FOUND)
+        if not profile.cv:
+            return Response({"detail": "Aucun CV enregistre."}, status=status.HTTP_404_NOT_FOUND)
+        from django.http import FileResponse
+        return FileResponse(profile.cv.open("rb"), content_type="application/pdf")

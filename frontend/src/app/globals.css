@@ -65,3 +65,24 @@
     @apply text-base text-slate-600 leading-relaxed;
   }
 }
+
+@layer utilities {
+  .bg-pattern-dots {
+    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .bg-gradient-warm {
+    background: linear-gradient(180deg, #fffbf5 0%, #fef7ee 50%, #fff8f1 100%);
+  }
+
+  .bg-gradient-cool {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+  }
+
+  .bg-subtle-mesh {
+    background-image:
+      radial-gradient(at 20% 30%, rgba(245, 130, 32, 0.03) 0%, transparent 50%),
+      radial-gradient(at 80% 70%, rgba(11, 21, 71, 0.03) 0%, transparent 50%);
+  }
+}

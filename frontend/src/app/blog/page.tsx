@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import SectionTitle from "@/components/ui/SectionTitle";
+import Image from "next/image";
 import Link from "next/link";
+import { images } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "Conseils & Ressources",
@@ -10,8 +11,9 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <>
-      <section className="bg-navy-700 text-white">
-        <div className="container-bmc px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative bg-navy-700 text-white overflow-hidden">
+        <Image src={images.coaching} alt="Conseils et ressources" fill className="object-cover opacity-20" />
+        <div className="relative container-bmc px-4 sm:px-6 lg:px-8 py-20">
           <span className="text-orange-400 font-semibold text-sm uppercase tracking-wider">Blog</span>
           <h1 className="text-4xl sm:text-5xl font-bold font-display mt-3 mb-6">Conseils & Ressources</h1>
           <p className="text-lg text-slate-300 max-w-2xl">
@@ -20,7 +22,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-cool">
         <div className="container-bmc">
           <div className="text-center py-16">
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-slate-100 flex items-center justify-center">

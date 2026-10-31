@@ -16,7 +16,7 @@ export default function TalentDashboard() {
   if (!user) return <div className="section-padding text-center">Chargement...</div>;
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-cool min-h-[80vh]">
       <div className="container-bmc">
         <div className="flex items-center justify-between mb-8">
           <div>

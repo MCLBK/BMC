@@ -28,7 +28,7 @@ export default function OpportunitiesPage() {
   async function handleApply(opportunityId: number) {
     setApplying(opportunityId);
     try {
-      await apiPost("/talents/applications/", { opportunity: opportunityId }, { token: token! });
+      await apiPost("/talents/apply/", { opportunity: opportunityId }, { token: token! });
       setApplied((prev) => new Set(prev).add(opportunityId));
     } catch {
       // Already applied or error
@@ -50,7 +50,7 @@ export default function OpportunitiesPage() {
   if (loading) return <div className="section-padding text-center">Chargement...</div>;
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-cool">
       <div className="container-bmc">
         <h1 className="heading-2 mb-8">Opportunites disponibles</h1>
         {opportunities.length === 0 ? (

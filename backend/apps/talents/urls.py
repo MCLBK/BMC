@@ -9,5 +9,6 @@ urlpatterns = [
     path("profile/", views.TalentProfileView.as_view(), name="talent_profile"),
     path("apply/", views.ApplicationCreateView.as_view(), name="apply"),
     path("applications/", views.MyApplicationsView.as_view(), name="my_applications"),
+    path("cv/<uuid:user_id>/", views.CVDownloadView.as_view(), name="cv_download"),
     path("", include(router.urls)),
 ]

@@ -43,6 +43,7 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-slate-300">
               <p>+229 91 47 41 41</p>
               <p>+229 58 99 31 77</p>
+              <p>+229 96 34 75 77</p>
               <p>cabinetbmc20@gmail.com</p>
             </div>
           </div>

@@ -27,8 +27,8 @@ export default function LoginPage() {
   }
 
   return (
-    <section className="section-padding">
-      <div className="container-bmc max-w-md">
+    <section className="section-padding bg-gradient-cool min-h-[80vh] flex items-center">
+      <div className="container-bmc max-w-md w-full">
         <h1 className="heading-2 text-center mb-8">Connexion Talents</h1>
         <form onSubmit={handleSubmit} className="space-y-5 bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
           {error && <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">{error}</div>}

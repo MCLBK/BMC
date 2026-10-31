@@ -24,15 +24,16 @@ export default function ApplicationsPage() {
       router.push("/talents/login");
       return;
     }
-    apiFetch<{ results: Application[] }>("/talents/my-applications/", { token: token! })
+    apiFetch<{ results: Application[] }>("/talents/applications/", { token: token! })
       .then((data) => setApplications(data.results || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [isAuthenticated, token, router]);
 
   const statusLabels: Record<string, { label: string; color: string }> = {
-    pending: { label: "En attente", color: "bg-yellow-50 text-yellow-700" },
+    submitted: { label: "Soumise", color: "bg-yellow-50 text-yellow-700" },
     reviewing: { label: "En cours d’examen", color: "bg-blue-50 text-blue-700" },
+    shortlisted: { label: "Preselectionne", color: "bg-indigo-50 text-indigo-700" },
     accepted: { label: "Acceptee", color: "bg-green-50 text-green-700" },
     rejected: { label: "Refusee", color: "bg-red-50 text-red-700" },
   };
@@ -40,7 +41,7 @@ export default function ApplicationsPage() {
   if (loading) return <div className="section-padding text-center">Chargement...</div>;
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-cool">
       <div className="container-bmc max-w-3xl">
         <h1 className="heading-2 mb-8">Mes candidatures</h1>
         {applications.length === 0 ? (
