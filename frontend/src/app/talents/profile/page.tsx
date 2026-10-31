@@ -1,0 +1,147 @@
+"use client";
+
+import { useState, useEffect, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import { apiFetch, apiUpload } from "@/lib/api";
+
+interface TalentProfile {
+  title: string;
+  bio: string;
+  skills: string;
+  experience_years: number;
+  education: string;
+  location: string;
+  availability: string;
+  cv: string | null;
+  linkedin_url: string;
+}
+
+export default function ProfilePage() {
+  const { user, token, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const [profile, setProfile] = useState<TalentProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/talents/login");
+      return;
+    }
+    apiFetch<TalentProfile>("/talents/profile/", { token: token! })
+      .then(setProfile)
+      .catch(() => setProfile({ title: "", bio: "", skills: "", experience_years: 0, education: "", location: "", availability: "available", cv: null, linkedin_url: "" }))
+      .finally(() => setLoading(false));
+  }, [isAuthenticated, token, router]);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSaving(true);
+    setMessage("");
+    const fd = new FormData(e.currentTarget);
+    try {
+      const cvFile = (e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement)?.files?.[0];
+      if (cvFile) {
+        const uploadData = new FormData();
+        uploadData.append("cv", cvFile);
+        Object.entries(profile || {}).forEach(([k, v]) => {
+          if (k !== "cv" && v !== null) uploadData.append(k, String(v));
+        });
+        uploadData.set("title", fd.get("title") as string);
+        uploadData.set("bio", fd.get("bio") as string);
+        uploadData.set("skills", fd.get("skills") as string);
+        uploadData.set("experience_years", fd.get("experience_years") as string);
+        uploadData.set("education", fd.get("education") as string);
+        uploadData.set("location", fd.get("location") as string);
+        uploadData.set("availability", fd.get("availability") as string);
+        uploadData.set("linkedin_url", fd.get("linkedin_url") as string);
+        await apiUpload("/talents/profile/", uploadData, { token: token! });
+      } else {
+        await apiFetch("/talents/profile/", {
+          token: token!,
+          method: "PUT",
+          body: JSON.stringify({
+            title: fd.get("title"),
+            bio: fd.get("bio"),
+            skills: fd.get("skills"),
+            experience_years: fd.get("experience_years"),
+            education: fd.get("education"),
+            location: fd.get("location"),
+            availability: fd.get("availability"),
+            linkedin_url: fd.get("linkedin_url"),
+          }),
+        });
+      }
+      setMessage("Profil mis a jour avec succes.");
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Erreur lors de la sauvegarde.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <div className="section-padding text-center">Chargement...</div>;
+
+  return (
+    <section className="section-padding">
+      <div className="container-bmc max-w-2xl">
+        <h1 className="heading-2 mb-8">Mon profil</h1>
+        {message && (
+          <div className={`mb-6 p-4 rounded-lg text-sm ${message.includes("succes") ? "bg-green-50 border border-green-200 text-green-700" : "bg-red-50 border border-red-200 text-red-700"}`}>
+            {message}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Titre professionnel</label>
+            <input type="text" name="title" defaultValue={profile?.title} placeholder="Ex: Commercial terrain senior" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Presentation</label>
+            <textarea name="bio" rows={4} defaultValue={profile?.bio} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none resize-y" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Competences</label>
+            <input type="text" name="skills" defaultValue={profile?.skills} placeholder="Ex: Vente B2B, Negociation, CRM" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Annees d&apos;experience</label>
+              <input type="number" name="experience_years" min={0} defaultValue={profile?.experience_years} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Localisation</label>
+              <input type="text" name="location" defaultValue={profile?.location} placeholder="Ex: Cotonou, Benin" className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Formation</label>
+            <input type="text" name="education" defaultValue={profile?.education} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Disponibilite</label>
+            <select name="availability" defaultValue={profile?.availability} className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none">
+              <option value="available">Disponible</option>
+              <option value="partially_available">Partiellement disponible</option>
+              <option value="not_available">Non disponible</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">LinkedIn</label>
+            <input type="url" name="linkedin_url" defaultValue={profile?.linkedin_url} placeholder="https://linkedin.com/in/..." className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent outline-none" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">CV (PDF, max 5 Mo)</label>
+            <input type="file" accept=".pdf" className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-500 hover:file:bg-orange-100" />
+            {profile?.cv && <p className="text-xs text-slate-500 mt-1">CV actuel enregistre</p>}
+          </div>
+          <button type="submit" disabled={saving} className="btn-primary w-full disabled:opacity-50">
+            {saving ? "Sauvegarde..." : "Mettre a jour mon profil"}
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
